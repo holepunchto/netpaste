@@ -7,6 +7,9 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "bin": {
+    "netpaste": "./cli.mjs"
+  },
   "author": "",
   "license": "ISC",
   "dependencies": {
@@ -14,5 +17,13 @@
     "b4a": "^1.6.0",
     "minimist": "^1.2.6",
     "sodium-native": "^3.4.1"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/chm-diederichs/netpaste.git"
+  },
+  "bugs": {
+    "url": "https://github.com/chm-diederichs/netpaste/issues"
+  },
+  "homepage": "https://github.com/chm-diederichs/netpaste#readme"
 }
