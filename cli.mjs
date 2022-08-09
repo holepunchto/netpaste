@@ -10,7 +10,7 @@ import os from 'os'
 
 const dir = path.join(os.homedir(), '.netpaste')
 
-const helpString =  `
+const helpString = `
 netpaste
 
 copy and paste over the dht
@@ -42,17 +42,16 @@ if (argv.help || command === 'help') {
 }
 
 let _seed
-let _profile
 
 if (command === 'seed') {
-  await storeProfile(seed(), argv.profile)
+  await store(seed(), argv.profile)
   process.exit(1)
 }
 
 if (argv.seed) {
   _seed = b4a.from(argv.seed, 'hex')
 } else {
-  _seed = await loadProfile(argv.profile)
+  _seed = await load(argv.profile)
 }
 
 const opts = getOpts(argv)
@@ -62,10 +61,31 @@ switch (command) {
     await copy(_seed, argv._[0], opts)
     break
 
-  case 'paste':
+  case 'paste': {
     const value = await paste(_seed, opts)
     process.stdout.write(value)
     break
+  }
+
+  case 'import': {
+    const [profile, seed] = argv._
+
+    if (!profile || !seed) {
+      console.log('usage: netpaste import <profile> <seed>')
+      process.exit(1)
+    }
+
+    await store(seed, profile)
+    break
+  }
+
+  case 'export': {
+    const profile = argv._.length ? argv._[0] : argv.profile
+    if (argv._.length) _seed = await load(profile)
+
+    console.log(profile + ':', _seed.toString('hex'))
+    break
+  }
 
   default:
     console.log(helpString)
@@ -74,14 +94,16 @@ switch (command) {
 
 process.exit(0)
 
-async function loadProfile (profile = 'default') {
+async function load (profile = 'default') {
   const file = path.join(dir, profile)
   const seed = await fs.readFile(file)
 
   return seed
 }
 
-async function storeProfile (seed, profile = 'default') {
+async function store (seed, profile = 'default') {
+  if (typeof seed === 'string') return store(b4a.from(seed, 'hex'), profile)
+
   await checkDir()
 
   const file = path.join(dir, profile)
