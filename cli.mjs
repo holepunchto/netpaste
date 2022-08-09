@@ -64,7 +64,7 @@ switch (command) {
 
   case 'paste':
     const value = await paste(_seed, opts)
-    console.log(value)
+    process.stdout.write(value)
     break
 
   default:
